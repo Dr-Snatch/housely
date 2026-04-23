@@ -21,6 +21,7 @@
 - [ ] Landing page — hero + how it works
 - [ ] Vercel deploy + env vars
 - [ ] End-to-end test with 3 UK postcodes
+- [ ] DEPLOYMENT: add `basePath: "/projects/housely"` to `next.config.ts`, set up Cloudflare Worker to proxy `arthur3.com/projects/housely*` → Vercel URL
 
 ## Done
 - [x] Project scaffold (Next.js 15 + TypeScript + Tailwind)
