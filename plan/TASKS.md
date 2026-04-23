@@ -29,7 +29,24 @@
 - [ ] Landing page — hero + how it works
 - [ ] Vercel deploy + env vars
 - [ ] End-to-end test with 3 UK postcodes
-- [ ] DEPLOYMENT: add `basePath: "/projects/housely"` to `next.config.ts`, set up Cloudflare Worker to proxy `arthur3.com/projects/housely*` → Vercel URL
+- [ ] DEPLOYMENT (do last):
+    1. Add `basePath: "/projects/housely"` to `next.config.ts`
+    2. Run `vercel deploy` → note the deployment URL (e.g. `housely-xxx.vercel.app`)
+    3. In Vercel project settings → Domains → add `housely-arthur3.vercel.app` (or keep default)
+    4. In Cloudflare Dashboard → Workers & Pages → Create Worker → paste proxy script below
+    5. Add Worker Route: `arthur3.com/projects/housely*` → that Worker
+    6. Worker intercepts BEFORE Astro's [slug].astro — no changes needed to arthur3.com repo
+
+    Cloudflare Worker script:
+    ```js
+    export default {
+      async fetch(request) {
+        const url = new URL(request.url);
+        url.hostname = "housely-xxx.vercel.app"; // replace with actual Vercel URL
+        return fetch(new Request(url.toString(), request));
+      },
+    };
+    ```
 
 ## Done
 - [x] Project scaffold (Next.js 15 + TypeScript + Tailwind)
