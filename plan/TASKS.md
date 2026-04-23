@@ -4,29 +4,28 @@
 <!-- Tag tasks here with [ACCOUNT-X] when you start them -->
 
 ## Todo
-- [ ] lib/types.ts — all TypeScript interfaces
-- [ ] lib/storage.ts — localStorage helpers
-- [ ] lib/uk-apis.ts — postcodes.io wrapper
-- [ ] lib/uk-apis.ts — police.uk crime wrapper
-- [ ] lib/uk-apis.ts — Overpass amenities wrapper
-- [ ] lib/uk-apis.ts — Environment Agency flood risk + live flood warnings
-- [ ] lib/uk-apis.ts — DfT road traffic accidents wrapper
-- [ ] lib/uk-apis.ts — planning.data.gov.uk (planning apps + conservation areas)
-- [ ] lib/uk-apis.ts — Historic England NHLE (listed buildings)
-- [ ] lib/uk-apis.ts — ONS IMD deprivation score by postcode
-- [ ] lib/uk-apis.ts — DEFRA UK-AIR air quality by lat/lng
-- [ ] lib/uk-apis.ts — Land Registry price history
+- [x] lib/types.ts — all TypeScript interfaces [ACCOUNT-1]
+- [x] lib/storage.ts — localStorage helpers [ACCOUNT-1]
+- [x] lib/uk-apis.ts — postcodes.io, crime, Overpass amenities, flood, air quality, IMD, Land Registry, planning, accidents — all in one file [ACCOUNT-1]
 - [ ] lib/uk-apis.ts — CQC GP surgery ratings (requires free registration)
 - [ ] lib/uk-apis.ts — BODS bus stops/routes (requires free API key)
-- [ ] lib/prompts.ts — system prompt + report prompt builder
+- [x] lib/prompts.ts — system prompt + report prompt builder [ACCOUNT-1]
 - [ ] /api/analyse route — data assembly + Claude streaming
-- [ ] Profile questionnaire UI (5 steps, /profile)
+- [x] lib/interaction-log.ts — event tracker: logSave, logDismiss, logView, logLayerToggle, logCompare, logFeedback [ACCOUNT-1]
+- [ ] lib/agent.ts — scout agent: expands target areas into candidate postcodes, scores each via /api/analyse, returns ranked matches
+- [x] lib/preferences.ts — applyInference, getWeightedScore, explainScore, diffWeights, scoreVerdict [ACCOUNT-1]
+- [ ] /api/agent/run route — runs scout agent for a given IdealHomeProfile, streams progress + results
+- [ ] /api/learn route — accepts last N InteractionEvents + current PreferenceVector; Claude analyses for weight mismatches; returns PreferenceInference (proposed weight changes + plain-English explanation)
+- [ ] Profile UI (/profile) — desktop: single page, two-column (lifestyle left, ideal home right) — NOT a step wizard
 - [ ] Property search page (/search)
-- [ ] /report/[id] page — streaming render
+- [ ] /report/[id] page — desktop two-panel: score + breakdown + streaming AI narrative left, interactive Leaflet map right with toggleable layers (amenities, crime, flood, transport); log view event on mount; log layer toggles
+- [ ] /report/[id] page — "Why this score?" section: per-category bar showing weight × raw score contribution; shows if weights have been updated ("recalculated after Scout learned from your behaviour")
 - [ ] SuitabilityScore component — animated score ring
-- [ ] ScoreBreakdown component — category bars
-- [ ] /saved page — saved reports list
-- [ ] Landing page — hero + how it works
+- [ ] ScoreBreakdown component — category bars with weight contribution overlay
+- [ ] /matches page — desktop two-panel: ranked list + filters + tabs (New/All/Saved) left; pin map right coloured by score; tooltip on hover; /saved folds into this as a tab; log dismiss/save events per card
+- [ ] PreferencePanel component — drawer/sidebar showing: current weight bars, inference history ("Scout noticed…"), accept/reject proposed weight changes, manual override sliders
+- [ ] "Scout learned" notification — toast/banner when a new PreferenceInference is ready; links to PreferencePanel to review + accept
+- [ ] Landing page — full-bleed dark hero with inline postcode search; Scout agent CTA banner below fold; desktop layout (1200px+)
 - [ ] Vercel deploy + env vars
 - [ ] End-to-end test with 3 UK postcodes
 - [ ] DEPLOYMENT (do last):
