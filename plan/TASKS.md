@@ -9,7 +9,15 @@
 - [ ] lib/uk-apis.ts — postcodes.io wrapper
 - [ ] lib/uk-apis.ts — police.uk crime wrapper
 - [ ] lib/uk-apis.ts — Overpass amenities wrapper
-- [ ] lib/uk-apis.ts — Environment Agency flood wrapper
+- [ ] lib/uk-apis.ts — Environment Agency flood risk + live flood warnings
+- [ ] lib/uk-apis.ts — DfT road traffic accidents wrapper
+- [ ] lib/uk-apis.ts — planning.data.gov.uk (planning apps + conservation areas)
+- [ ] lib/uk-apis.ts — Historic England NHLE (listed buildings)
+- [ ] lib/uk-apis.ts — ONS IMD deprivation score by postcode
+- [ ] lib/uk-apis.ts — DEFRA UK-AIR air quality by lat/lng
+- [ ] lib/uk-apis.ts — Land Registry price history
+- [ ] lib/uk-apis.ts — CQC GP surgery ratings (requires free registration)
+- [ ] lib/uk-apis.ts — BODS bus stops/routes (requires free API key)
 - [ ] lib/prompts.ts — system prompt + report prompt builder
 - [ ] /api/analyse route — data assembly + Claude streaming
 - [ ] Profile questionnaire UI (5 steps, /profile)

@@ -23,12 +23,27 @@ suitability score and report.
 - `lib/storage.ts` — localStorage helpers for profile and saved reports
 - `app/api/analyse/route.ts` — main endpoint: fetches UK data, streams Claude report
 
-## UK data APIs used (all free, no auth unless noted)
+## UK data APIs — Tier 1 (no auth, build these first)
 - Postcodes: https://postcodes.io
 - Crime: https://data.police.uk/api
 - Amenities: OpenStreetMap Overpass API
-- Flood: Environment Agency Flood API
-- EPC: https://epc.opendatacommunities.org (free registration)
+- Flood risk: https://environment.data.gov.uk/flood-risk-postcode-tool
+- Flood warnings (live): https://environment.data.gov.uk/flood-monitoring/
+- Road traffic accidents: https://roadtraffic.dft.gov.uk/api/
+- Planning applications + conservation areas: https://www.planning.data.gov.uk/docs
+- Listed buildings: Historic England NHLE (ArcGIS REST, lat/lng spatial)
+- Deprivation (IMD): https://imd-by-postcode.opendatacommunities.org/
+- Air quality: DEFRA UK-AIR SOS API (OGC REST, lat/lng)
+- Land Registry price history: https://landregistry.data.gov.uk/
+
+## UK data APIs — Tier 2 (free registration required)
+- EPC: https://epc.opendatacommunities.org
+- GP ratings: https://api.service.cqc.org.uk
+- Bus stops/routes: https://www.bus-data.dft.gov.uk/ (free API key)
+- School locations: https://www.get-information-schools.service.gov.uk/
+
+## Scoring logic
+Claude weights data sources against the user's declared priorities. See plan/TASKS.md for the priority → data source mapping.
 
 ## Env vars needed
 ```
