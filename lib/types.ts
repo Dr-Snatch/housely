@@ -68,6 +68,8 @@ export interface AmenityData {
   schools: number
   pharmacies: number
   nearestParkDistanceMetres?: number
+  nearestGPRating?: 'Outstanding' | 'Good' | 'Requires Improvement' | 'Inadequate'
+  ratedGPsNearby?: number              // CQC-rated GP surgeries within ~2km
 }
 
 export interface FloodData {

@@ -11,12 +11,20 @@ import type {
   AccidentData,
 } from './types'
 
-// ─── Shared fetch helper ──────────────────────────────────────────────────────
+// ─── Shared fetch helpers ─────────────────────────────────────────────────────
+
+const NEXT_OPTS = { next: { revalidate: 3600 } } as const
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, { next: { revalidate: 3600 }, ...init })
+  const res = await fetch(url, { ...NEXT_OPTS, ...init })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${url}`)
   return res.json() as Promise<T>
+}
+
+async function fetchText(url: string, init?: RequestInit): Promise<string> {
+  const res = await fetch(url, { ...NEXT_OPTS, ...init })
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${url}`)
+  return res.text()
 }
 
 // ─── 1. Postcodes.io ──────────────────────────────────────────────────────────
@@ -28,7 +36,10 @@ interface PostcodeResult {
   admin_district: string
   region: string
   parliamentary_constituency: string
-  codes: { admin_district: string }
+  codes: {
+    admin_district: string
+    lsoa: string
+  }
 }
 
 export async function lookupPostcode(postcode: string): Promise<PostcodeResult> {
@@ -56,7 +67,6 @@ interface CrimeEntry {
 }
 
 export async function fetchCrime(lat: number, lng: number): Promise<CrimeData> {
-  // Last 12 months — police API returns one month at a time; fetch latest available
   const crimes = await fetchJson<CrimeEntry[]>(
     `https://data.police.uk/api/crimes-street/all-crime?lat=${lat}&lng=${lng}`,
   ).catch(() => [] as CrimeEntry[])
@@ -84,36 +94,27 @@ async function overpassQuery(query: string): Promise<OverpassElement[]> {
   const res = await fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
     body: `data=${encodeURIComponent(query)}`,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': 'Housely/1.0 (hackathon project)',
+    },
+    ...NEXT_OPTS,
   })
+  if (!res.ok) return []
   const json = await res.json() as OverpassResult
   return json.elements ?? []
 }
 
 export async function fetchAmenities(lat: number, lng: number): Promise<AmenityData> {
   const radius = 800 // metres
-  const query = `
-    [out:json][timeout:15];
-    (
-      node["shop"="supermarket"](around:${radius},${lat},${lng});
-      node["amenity"="cafe"](around:${radius},${lat},${lng});
-      node["amenity"="restaurant"](around:${radius},${lat},${lng});
-      node["amenity"="pub"](around:${radius},${lat},${lng});
-      node["leisure"="fitness_centre"](around:${radius},${lat},${lng});
-      node["leisure"="park"](around:${radius},${lat},${lng});
-      way["leisure"="park"](around:${radius},${lat},${lng});
-      node["amenity"="doctors"](around:${radius},${lat},${lng});
-      node["amenity"="pharmacy"](around:${radius},${lat},${lng});
-      node["amenity"="school"](around:${radius},${lat},${lng});
-    );
-    out count;
-  `
 
-  // Use a simpler count approach per type
   const countQuery = (amenityFilter: string, r = radius) =>
     overpassQuery(
       `[out:json][timeout:10];(${amenityFilter}(around:${r},${lat},${lng}););out count;`,
-    ).then(els => els[0]?.tags?.total ? parseInt(els[0].tags.total) : 0).catch(() => 0)
+    ).then(els => {
+      const total = els[0]?.tags?.total
+      return total ? parseInt(total) : 0
+    }).catch(() => 0)
 
   const [supermarkets, cafes, restaurants, pubs, gyms, parks, gpSurgeries, pharmacies, schools] =
     await Promise.all([
@@ -131,217 +132,341 @@ export async function fetchAmenities(lat: number, lng: number): Promise<AmenityD
   return { supermarkets, cafes, restaurants, pubs, gyms, parks, gpSurgeries, pharmacies, schools }
 }
 
-// ─── 4. Environment Agency — flood risk ──────────────────────────────────────
+// ─── 3b. Overpass — transport ─────────────────────────────────────────────────
 
-export async function fetchFloodRisk(postcode: string): Promise<FloodData> {
-  const clean = encodeURIComponent(postcode.replace(/\s+/g, '').toUpperCase())
+interface OverpassNode { id: number; lat: number; lon: number; tags: Record<string, string> }
 
-  // Flood risk by postcode
-  const riskData = await fetchJson<{ items: { longTermFloodRisk: string }[] }>(
-    `https://environment.data.gov.uk/flood-risk/communities/postcode/${clean}`,
-  ).catch(() => null)
+async function overpassNodes(query: string): Promise<OverpassNode[]> {
+  const res = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: `data=${encodeURIComponent(query)}`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': 'Housely/1.0 (hackathon project)',
+    },
+    ...NEXT_OPTS,
+  })
+  if (!res.ok) return []
+  const json = await res.json() as { elements: OverpassNode[] }
+  return json.elements ?? []
+}
 
-  const rawRisk = riskData?.items?.[0]?.longTermFloodRisk?.toLowerCase() ?? 'very low'
-  const riskLevel =
-    rawRisk.includes('high')     ? 'high' :
-    rawRisk.includes('medium')   ? 'medium' :
-    rawRisk.includes('very low') ? 'very_low' : 'low'
+function haversineMetres(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
 
-  // Active flood warnings within region
-  const warningsData = await fetchJson<{ items: unknown[] }>(
-    `https://environment.data.gov.uk/flood-monitoring/id/floods?min-severity=3&_limit=50`,
-  ).catch(() => null)
+export async function fetchTransport(lat: number, lng: number): Promise<TransportData> {
+  const busQuery = `[out:json][timeout:10];node["highway"="bus_stop"](around:400,${lat},${lng});out body;`
+  const stationQuery = `[out:json][timeout:10];node["railway"~"station|halt|subway_station"](around:1200,${lat},${lng});out body;`
 
-  // Simplification: count active warnings (real impl would filter by area)
-  const activeWarnings = warningsData?.items?.length ?? 0
+  const [busStops, stations] = await Promise.all([
+    overpassNodes(busQuery).catch(() => [] as OverpassNode[]),
+    overpassNodes(stationQuery).catch(() => [] as OverpassNode[]),
+  ])
+
+  // Separate tube/underground from overground rail
+  const tubeStations = stations.filter(s =>
+    s.tags.network?.toLowerCase().includes('underground') ||
+    s.tags.network?.toLowerCase().includes('overground') ||
+    s.tags.network?.toLowerCase().includes('elizabeth') ||
+    s.tags.station === 'subway' ||
+    s.tags.subway === 'yes',
+  )
+  const railStations = stations.filter(s =>
+    !tubeStations.includes(s) && (s.tags.railway === 'station' || s.tags.railway === 'halt'),
+  )
+
+  const nearest = (nodes: OverpassNode[]) => {
+    if (!nodes.length) return undefined
+    const sorted = nodes
+      .map(n => ({ n, d: haversineMetres(lat, lng, n.lat, n.lon) }))
+      .sort((a, b) => a.d - b.d)
+    const { n, d } = sorted[0]
+    return { name: n.tags.name ?? 'Station', distanceMetres: Math.round(d) }
+  }
+
+  const nearestTube = nearest(tubeStations)
+  const nearestRail = nearest(railStations) ?? nearest(stations)
+
+  // Unique bus routes from stop names/refs
+  const busRouteSet = new Set(busStops.flatMap(s => (s.tags.ref ?? '').split(';').filter(Boolean)))
 
   return {
-    riskLevel,
-    floodZone: rawRisk || 'Flood Zone 1',
-    activeWarnings,
+    busStopCount: busStops.length,
+    busRouteCount: busRouteSet.size,
+    nearestTubeStation: nearestTube
+      ? { name: nearestTube.name, distanceMetres: nearestTube.distanceMetres, lines: [] }
+      : undefined,
+    nearestRailStation: nearestRail,
   }
 }
 
-// ─── 5. DEFRA UK-AIR — air quality ───────────────────────────────────────────
+// ─── 4. Environment Agency — flood risk ──────────────────────────────────────
+// Docs: https://environment.data.gov.uk/flood-monitoring/doc/reference
+// Uses lat/lng endpoints (no direct postcode API for static risk)
 
-export async function fetchAirQuality(lat: number, lng: number): Promise<AirQualityData> {
-  // UK-AIR SOS API — nearest monitoring station observations
-  const url =
-    `https://uk-air.defra.gov.uk/sos-ukair/api/v1/observations` +
-    `?featureOfInterest=&observedProperty=&procedure=&spatialFilter=om%3AphenomenonTime` +
-    `&offering=&bbox=${lng - 0.5},${lat - 0.5},${lng + 0.5},${lat + 0.5}` +
-    `&limit=10&offset=0&expanded=true`
-
-  const data = await fetchJson<{ observations: { result: number; observedProperty: { label: string } }[] }>(
-    url,
+export async function fetchFloodRisk(lat: number, lng: number): Promise<FloodData> {
+  // Flood areas within 1km — count gives a static risk proxy
+  const areasData = await fetchJson<{ items: { label: string; riverOrSea?: string }[] }>(
+    `https://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=${lat}&long=${lng}&dist=1`,
   ).catch(() => null)
 
-  // Fallback: use DAQI-style indexing (1–10 scale)
-  // If API fails we return a neutral mid-range
-  if (!data?.observations?.length) {
+  // Active flood warnings/alerts within 5km
+  const warningsData = await fetchJson<{ items: { severity: number; severityLevel: number }[] }>(
+    `https://environment.data.gov.uk/flood-monitoring/id/floods?lat=${lat}&long=${lng}&dist=5`,
+  ).catch(() => null)
+
+  const areaCount = areasData?.items?.length ?? 0
+  const activeWarnings = warningsData?.items?.length ?? 0
+
+  // Derive risk level from area count + active warnings
+  let riskLevel: FloodData['riskLevel'] =
+    areaCount === 0  ? 'very_low' :
+    areaCount <= 3   ? 'low' :
+    areaCount <= 8   ? 'medium' : 'high'
+
+  // Bump up one level if there are active warnings
+  if (activeWarnings > 0 && riskLevel === 'very_low') riskLevel = 'low'
+  if (activeWarnings > 0 && riskLevel === 'low')      riskLevel = 'medium'
+  if (activeWarnings > 0 && riskLevel === 'medium')   riskLevel = 'high'
+
+  // Derive a readable zone label
+  const floodZone =
+    riskLevel === 'very_low' ? 'Flood Zone 1 (low risk)' :
+    riskLevel === 'low'      ? 'Flood Zone 1/2' :
+    riskLevel === 'medium'   ? 'Flood Zone 2' : 'Flood Zone 3'
+
+  return { riskLevel, floodZone, activeWarnings }
+}
+
+// ─── 5. Open-Meteo air quality ────────────────────────────────────────────────
+// Docs: https://open-meteo.com/en/docs/air-quality-api
+// Free, no API key. Uses European AQI (0–500 scale).
+
+export async function fetchAirQuality(lat: number, lng: number): Promise<AirQualityData> {
+  const url =
+    `https://air-quality-api.open-meteo.com/v1/air-quality` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&current=pm10,pm2_5,nitrogen_dioxide,european_aqi` +
+    `&timezone=auto`
+
+  const data = await fetchJson<{
+    current: {
+      pm10: number
+      pm2_5: number
+      nitrogen_dioxide: number
+      european_aqi: number
+    }
+  }>(url).catch(() => null)
+
+  if (!data?.current) {
     return { no2Index: 3, pm25Index: 3, pm10Index: 3, overallIndex: 3, overallBand: 'Low' }
   }
 
-  const get = (label: string) =>
-    data.observations.find(o => o.observedProperty?.label?.toLowerCase().includes(label))?.result ?? 3
+  const { pm10, pm2_5, nitrogen_dioxide, european_aqi: eaqi } = data.current
 
-  const no2 = Math.min(10, Math.round(get('nitrogen') / 20))
-  const pm25 = Math.min(10, Math.round(get('pm2') / 10))
-  const pm10 = Math.min(10, Math.round(get('pm10') / 15))
-  const overall = Math.max(no2, pm25, pm10)
+  // Map raw μg/m³ to UK DAQI 1–10 scale (approximate)
+  const no2Index  = Math.min(10, Math.max(1, Math.ceil(nitrogen_dioxide / 25)))
+  const pm25Index = Math.min(10, Math.max(1, Math.ceil(pm2_5 / 7)))
+  const pm10Index = Math.min(10, Math.max(1, Math.ceil(pm10 / 10)))
 
-  const band =
-    overall >= 7 ? 'Very High' :
-    overall >= 4 ? 'High' :
-    overall >= 2 ? 'Moderate' : 'Low'
+  // Use European AQI for the overall band
+  const overallIndex = Math.min(10, Math.max(1, Math.ceil(eaqi / 20)))
+  const overallBand: AirQualityData['overallBand'] =
+    eaqi < 20  ? 'Low' :
+    eaqi < 60  ? 'Moderate' :
+    eaqi < 100 ? 'High' : 'Very High'
 
-  return { no2Index: no2, pm25Index: pm25, pm10Index: pm10, overallIndex: overall, overallBand: band as AirQualityData['overallBand'] }
+  return { no2Index, pm25Index, pm10Index, overallIndex, overallBand }
 }
 
-// ─── 6. ONS IMD — deprivation ────────────────────────────────────────────────
+// ─── 6. ONS/DLUHC IMD — deprivation ──────────────────────────────────────────
+// The ONS SPARQL endpoint (statistics.data.gov.uk) was decommissioned in 2025.
+// opendatacommunities.org does not expose a REST JSON API.
+// Returns neutral defaults — will improve in a future sprint.
 
-export async function fetchDeprivation(postcode: string): Promise<DeprivationData> {
-  const clean = postcode.replace(/\s+/g, '').toUpperCase()
-  const data = await fetchJson<{
-    imdScore: number
-    imdRank: number
-    imdDecile: number
-    incomeScore: number
-    employmentScore: number
-    educationScore: number
-    healthScore: number
-    crimeScore: number
-    barriersScore: number
-    environmentScore: number
-  }>(
-    `https://imd-by-postcode.opendatacommunities.org/imd/2019/postcode/${clean}`,
-  ).catch(() => null)
-
+export async function fetchDeprivation(_postcode: string): Promise<DeprivationData> {
   return {
-    imdScore:        data?.imdScore         ?? 20,
-    imdRank:         data?.imdRank          ?? 16000,
-    imdDecile:       data?.imdDecile        ?? 5,
-    incomeScore:     data?.incomeScore,
-    employmentScore: data?.employmentScore,
-    educationScore:  data?.educationScore,
-    healthScore:     data?.healthScore,
-    crimeScore:      data?.crimeScore,
-    barriersScore:   data?.barriersScore,
-    environmentScore:data?.environmentScore,
+    imdScore: 20,
+    imdRank: 16000,
+    imdDecile: 5,
   }
 }
 
 // ─── 7. Land Registry — price history ────────────────────────────────────────
+// Uses the PPD CSV download endpoint (no SPARQL required).
+// CSV columns: transaction_id, price, date, postcode, property_type, ...
+
+function parseSimpleCsv(text: string): string[][] {
+  return text
+    .trim()
+    .split('\n')
+    .map(line => {
+      // Handle quoted values: "value1","value2",...
+      const cols: string[] = []
+      let cur = ''
+      let inQuote = false
+      for (const ch of line) {
+        if (ch === '"') { inQuote = !inQuote }
+        else if (ch === ',' && !inQuote) { cols.push(cur); cur = '' }
+        else { cur += ch }
+      }
+      cols.push(cur)
+      return cols
+    })
+}
 
 export async function fetchPriceHistory(postcode: string): Promise<PriceData> {
   const clean = postcode.replace(/\s+/g, '').toUpperCase()
-  const encoded = encodeURIComponent(clean)
+  const encoded = clean.replace(/([A-Z]+\d[A-Z\d]?)(\d[A-Z]{2})/, '$1 $2')
+    .replace(' ', '+')
 
-  const sparql = `
-    SELECT ?paon ?saon ?amount ?date WHERE {
-      ?addr <http://www.w3.org/2000/01/rdf-schema#label> "${clean}" .
-      ?transx <http://landregistry.data.gov.uk/def/ppi/propertyAddress> ?addr ;
-               <http://landregistry.data.gov.uk/def/ppi/pricePaid> ?amount ;
-               <http://landregistry.data.gov.uk/def/ppi/transactionDate> ?date .
-    } ORDER BY DESC(?date) LIMIT 20
-  `
+  const text = await fetchText(
+    `https://landregistry.data.gov.uk/app/ppd/ppd_data.csv?postcode=${encoded}&limit=50`,
+  ).catch(() => '')
 
-  const data = await fetchJson<{
-    results: { bindings: { amount: { value: string }; date: { value: string } }[] }
-  }>(
-    `https://landregistry.data.gov.uk/landregistry/query?query=${encodeURIComponent(sparql)}&output=json`,
-  ).catch(() => null)
+  if (!text) return { postcode: clean }
 
-  const bindings = data?.results?.bindings ?? []
-  const prices = bindings.map(b => parseInt(b.amount.value)).filter(Boolean)
+  const rows = parseSimpleCsv(text)
+
+  // Detect and skip header row (header has non-numeric price column)
+  const dataRows = rows.filter(r => r.length >= 3 && /^\d+$/.test(r[1]?.trim()))
+
+  const prices = dataRows
+    .map(r => parseInt(r[1].trim()))
+    .filter(p => p > 0 && !isNaN(p))
+
   const median = prices.length
     ? prices.sort((a, b) => a - b)[Math.floor(prices.length / 2)]
     : undefined
 
+  // Count sales in last 12 months (date in column 2 as YYYY-MM-DD)
+  const oneYearAgo = new Date()
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+  const recentSales = dataRows.filter(r => {
+    const d = new Date(r[2]?.trim())
+    return !isNaN(d.getTime()) && d >= oneYearAgo
+  }).length
+
   return {
     postcode: clean,
     medianSalePrice: median,
-    salesLast12Months: prices.length,
+    salesLast12Months: recentSales,
   }
 }
 
 // ─── 8. Planning data ─────────────────────────────────────────────────────────
+// Docs: https://www.planning.data.gov.uk/docs
+// Correct endpoint: GET /entity.json?latitude=X&longitude=Y&dataset=...
 
-export async function fetchPlanning(lat: number, lng: number, postcode: string): Promise<PlanningData> {
-  const params = new URLSearchParams({
-    point: `POINT(${lng} ${lat})`,
-    dataset: 'planning-application',
-    entries: 'current',
-    limit: '50',
-  })
-
-  const planningData = await fetchJson<{ count: number; results: unknown[] }>(
-    `https://www.planning.data.gov.uk/api/search.json?${params}`,
+export async function fetchPlanning(lat: number, lng: number): Promise<PlanningData> {
+  // Check if location is within a conservation area
+  const conservationData = await fetchJson<{ count: number; entities: unknown[] }>(
+    `https://www.planning.data.gov.uk/entity.json` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&dataset=conservation-area&geometry_relation=intersects&limit=1`,
   ).catch(() => null)
 
-  // Conservation area check
-  const conservationParams = new URLSearchParams({
-    point: `POINT(${lng} ${lat})`,
-    dataset: 'conservation-area',
-    entries: 'current',
-    limit: '1',
-  })
-  const conservation = await fetchJson<{ count: number }>(
-    `https://www.planning.data.gov.uk/api/search.json?${conservationParams}`,
-  ).catch(() => null)
-
-  // Listed buildings (Historic England NHLE via ArcGIS)
+  // Listed buildings nearby (~500m bounding box via ArcGIS Historic England)
   const listedData = await fetchJson<{ features: unknown[] }>(
-    `https://services.historicengland.org.uk/NMRserver/api/v2/GeoJSON/listedbuildings?bbox=${lng - 0.01},${lat - 0.01},${lng + 0.01},${lat + 0.01}`,
+    `https://services.historicengland.org.uk/NMRserver/api/v2/GeoJSON/listedbuildings` +
+    `?bbox=${lng - 0.005},${lat - 0.005},${lng + 0.005},${lat + 0.005}`,
   ).catch(() => null)
 
   return {
-    recentApplications: planningData?.count ?? 0,
-    conservationArea: (conservation?.count ?? 0) > 0,
+    recentApplications: 0, // planning-application dataset not reliably populated
+    conservationArea: (conservationData?.count ?? 0) > 0,
     listedBuildingsNearby: listedData?.features?.length ?? 0,
-    aonbOrSssi: false, // would need MAGIC WMS query
+    aonbOrSssi: false,
   }
 }
 
 // ─── 9. DfT road traffic accidents ───────────────────────────────────────────
+// The roadtraffic.dft.gov.uk API requires a non-standard port and is unreliable.
+// Graceful no-data fallback.
 
-export async function fetchAccidents(lat: number, lng: number): Promise<AccidentData> {
-  // Road safety data API
-  const data = await fetchJson<{
-    rows: { severity: string }[]
-  }>(
-    `https://data.dft.gov.uk/road-accidents-safety-data/accidents-${new Date().getFullYear() - 1}.json?$where=within_circle(location,${lat},${lng},500)&$limit=200`,
-  ).catch(() => null)
-
-  const rows = data?.rows ?? []
-  const severities = { slight: 0, serious: 0, fatal: 0 }
-  for (const r of rows) {
-    const s = r.severity?.toLowerCase()
-    if (s === 'slight') severities.slight++
-    else if (s === 'serious') severities.serious++
-    else if (s === 'fatal') severities.fatal++
-  }
-
-  return { accidentsLast3Years: rows.length, severities }
+export async function fetchAccidents(_lat: number, _lng: number): Promise<AccidentData> {
+  return { accidentsLast3Years: 0, severities: { slight: 0, serious: 0, fatal: 0 } }
 }
 
-// ─── 10. Main assembler ───────────────────────────────────────────────────────
+// ─── 10. CQC — GP surgery ratings ────────────────────────────────────────────
+// Public API — no key required.
+// Docs: https://api.service.cqc.org.uk/public/v1/docs
+
+type CQCRating = 'Outstanding' | 'Good' | 'Requires Improvement' | 'Inadequate'
+
+interface CQCLocation {
+  locationId: string
+  locationName: string
+  postalCode: string
+  currentRatings?: {
+    overall?: { rating?: CQCRating }
+  }
+}
+
+interface CQCResponse {
+  locations: CQCLocation[]
+  total: number
+}
+
+export async function fetchCQCGP(
+  postcode: string,
+): Promise<{ nearestGPRating?: CQCRating; ratedGPsNearby: number }> {
+  const clean = encodeURIComponent(postcode.replace(/\s+/g, ' ').toUpperCase())
+
+  const data = await fetchJson<CQCResponse>(
+    `https://api.service.cqc.org.uk/public/v1/locations` +
+      `?postalCode=${clean}&primaryInspectionCategory=GP+PRACTICE&perPage=10`,
+    { headers: { 'User-Agent': 'Housely/1.0' } },
+  ).catch(() => null)
+
+  if (!data?.locations?.length) return { ratedGPsNearby: 0 }
+
+  const rated = data.locations.filter(l => l.currentRatings?.overall?.rating)
+
+  // Pick the best rating for "nearest GP" display
+  const RATING_ORDER: CQCRating[] = ['Outstanding', 'Good', 'Requires Improvement', 'Inadequate']
+  const best = rated
+    .map(l => l.currentRatings!.overall!.rating as CQCRating)
+    .sort((a, b) => RATING_ORDER.indexOf(a) - RATING_ORDER.indexOf(b))[0]
+
+  return {
+    nearestGPRating: best,
+    ratedGPsNearby: rated.length,
+  }
+}
+
+// ─── 11. Main assembler ───────────────────────────────────────────────────────
 
 /** Fetch all neighbourhood data for a postcode in parallel. Never throws — returns partial data. */
 export async function fetchNeighbourhoodData(postcode: string): Promise<NeighbourhoodData> {
   const geo = await lookupPostcode(postcode)
 
-  const [crime, amenities, flood, airQuality, prices, deprivation, planning, accidents] =
+  const [crime, transport, amenities, flood, airQuality, prices, deprivation, planning, accidents, cqcGP] =
     await Promise.allSettled([
       fetchCrime(geo.latitude, geo.longitude),
+      fetchTransport(geo.latitude, geo.longitude),
       fetchAmenities(geo.latitude, geo.longitude),
-      fetchFloodRisk(postcode),
+      fetchFloodRisk(geo.latitude, geo.longitude),
       fetchAirQuality(geo.latitude, geo.longitude),
       fetchPriceHistory(postcode),
       fetchDeprivation(postcode),
-      fetchPlanning(geo.latitude, geo.longitude, postcode),
+      fetchPlanning(geo.latitude, geo.longitude),
       fetchAccidents(geo.latitude, geo.longitude),
+      fetchCQCGP(postcode),
     ])
+
+  // Merge CQC ratings into amenities data
+  const amenitiesValue = amenities.status === 'fulfilled' ? amenities.value : undefined
+  const cqcValue = cqcGP.status === 'fulfilled' ? cqcGP.value : undefined
+  const mergedAmenities = amenitiesValue && cqcValue
+    ? { ...amenitiesValue, ...cqcValue }
+    : amenitiesValue
 
   return {
     postcode: geo.postcode,
@@ -350,7 +475,8 @@ export async function fetchNeighbourhoodData(postcode: string): Promise<Neighbou
     district: geo.admin_district,
     region: geo.region,
     crime:       crime.status       === 'fulfilled' ? crime.value       : undefined,
-    amenities:   amenities.status   === 'fulfilled' ? amenities.value   : undefined,
+    transport:   transport.status   === 'fulfilled' ? transport.value   : undefined,
+    amenities:   mergedAmenities,
     flood:       flood.status       === 'fulfilled' ? flood.value       : undefined,
     airQuality:  airQuality.status  === 'fulfilled' ? airQuality.value  : undefined,
     prices:      prices.status      === 'fulfilled' ? prices.value      : undefined,

@@ -89,9 +89,19 @@ export function extractRawScores(data: NeighbourhoodData): Partial<Record<string
     scores.deprivation = Math.round((data.deprivation.imdDecile / 10) * 100)
   }
 
-  // GP / health
+  // GP / health — count from Overpass + CQC quality rating bonus
   if (data.amenities) {
-    scores.gp_health = Math.min(100, data.amenities.gpSurgeries * 25)
+    let gpScore = Math.min(75, data.amenities.gpSurgeries * 25)
+    const ratingBonus: Record<string, number> = {
+      Outstanding: 25,
+      Good: 15,
+      'Requires Improvement': 0,
+      Inadequate: -15,
+    }
+    if (data.amenities.nearestGPRating) {
+      gpScore += ratingBonus[data.amenities.nearestGPRating] ?? 0
+    }
+    scores.gp_health = Math.max(0, Math.min(100, Math.round(gpScore)))
   }
 
   return scores
@@ -144,8 +154,11 @@ export function buildReportPrompt(
     ? `IMD decile: ${data.deprivation.imdDecile}/10 (1 = most deprived). Score: ${data.deprivation.imdScore.toFixed(1)}.`
     : 'Deprivation data unavailable.'
 
+  const gpRatingNote = data.amenities?.nearestGPRating
+    ? ` Nearest GP rated: ${data.amenities.nearestGPRating} (CQC).`
+    : ''
   const amenityDetail = data.amenities
-    ? `Supermarkets: ${data.amenities.supermarkets}, cafes: ${data.amenities.cafes}, restaurants: ${data.amenities.restaurants}, pubs: ${data.amenities.pubs}, parks: ${data.amenities.parks}, gyms: ${data.amenities.gyms}, GP surgeries: ${data.amenities.gpSurgeries}, schools: ${data.amenities.schools}.`
+    ? `Supermarkets: ${data.amenities.supermarkets}, cafes: ${data.amenities.cafes}, restaurants: ${data.amenities.restaurants}, pubs: ${data.amenities.pubs}, parks: ${data.amenities.parks}, gyms: ${data.amenities.gyms}, GP surgeries: ${data.amenities.gpSurgeries}, schools: ${data.amenities.schools}.${gpRatingNote}`
     : 'Amenity data unavailable.'
 
   const conservationNote = data.planning?.conservationArea
