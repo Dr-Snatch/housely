@@ -7,7 +7,7 @@
 - [x] lib/types.ts — all TypeScript interfaces [ACCOUNT-1]
 - [x] lib/storage.ts — localStorage helpers [ACCOUNT-1]
 - [x] lib/uk-apis.ts — postcodes.io, crime, Overpass amenities, flood, air quality, IMD, Land Registry, planning, accidents — all in one file [ACCOUNT-1]
-- [ ] lib/uk-apis.ts — CQC GP surgery ratings (requires free registration)
+- [ ] lib/uk-apis.ts — CQC GP surgery ratings (requires free registration) [ACCOUNT-2]
 - [ ] lib/uk-apis.ts — BODS bus stops/routes (requires free API key)
 - [x] lib/prompts.ts — system prompt + report prompt builder [ACCOUNT-1]
 - [ ] /api/analyse route — data assembly + Claude streaming [ACCOUNT-2]
@@ -15,7 +15,7 @@
 - [ ] lib/agent.ts — scout agent: expands target areas into candidate postcodes, scores each via /api/analyse, returns ranked matches
 - [x] lib/preferences.ts — applyInference, getWeightedScore, explainScore, diffWeights, scoreVerdict [ACCOUNT-1]
 - [ ] /api/agent/run route — runs scout agent for a given IdealHomeProfile, streams progress + results
-- [ ] /api/learn route — accepts last N InteractionEvents + current PreferenceVector; Claude analyses for weight mismatches; returns PreferenceInference (proposed weight changes + plain-English explanation)
+- [ ] /api/learn route — accepts last N InteractionEvents + current PreferenceVector; Claude analyses for weight mismatches; returns PreferenceInference (proposed weight changes + plain-English explanation) [ACCOUNT-2]
 - [ ] Profile UI (/profile) — desktop: single page, two-column (lifestyle left, ideal home right) — NOT a step wizard [ACCOUNT-1]
 - [ ] Property search page (/search)
 - [ ] /report/[id] page — desktop two-panel: score + breakdown + streaming AI narrative left, interactive Leaflet map right with toggleable layers (amenities, crime, flood, transport); log view event on mount; log layer toggles
