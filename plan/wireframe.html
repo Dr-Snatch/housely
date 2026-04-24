@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Housely — Desktop Wireframes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #e8e8e8;
+      color: #111;
+      padding: 40px 0 80px;
+    }
+
+    /* ── Frame wrapper ─────────────────────────────────────── */
+    .screen-label {
+      text-align: center;
+      padding: 40px 0 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #777;
+    }
+    .browser {
+      width: 1200px;
+      margin: 0 auto 64px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.18);
+      border: 1px solid #ccc;
+    }
+    .browser-chrome {
+      height: 40px;
+      background: #f0f0f0;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28c840; }
+    .url-bar {
+      flex: 1;
+      height: 24px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin: 0 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* ── Utilities ─────────────────────────────────────────── */
+    .ph { background: #e2e2e2; border-radius: 4px; display: block; }
+    .ph-dark { background: #555; border-radius: 4px; display: block; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 22px;
+      background: #111; color: #fff;
+      border: 2px solid #111;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+    }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .btn-outline { background: transparent; color: #111; }
+    .btn-ghost { background: transparent; color: #888; border-color: transparent; }
+    .tag {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+      background: #ebebeb; color: #555;
+    }
+    .tag-green { background: #d4edda; color: #155724; }
+    .tag-amber { background: #fff3cd; color: #856404; }
+    .tag-red   { background: #f8d7da; color: #721c24; }
+    .label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #aaa;
+    }
+    .divider { height: 1px; background: #eee; }
+
+    /* ── Top nav (shared) ─────────────────────────────────── */
+    .topnav {
+      height: 52px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 0;
+    }
+    .wordmark { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; color: #111; }
+    .nav-links { display: flex; gap: 4px; margin-left: 40px; }
+    .nav-link {
+      padding: 6px 14px; border-radius: 6px;
+      font-size: 14px; font-weight: 500; color: #666;
+    }
+    .nav-link.active { background: #f0f0f0; color: #111; font-weight: 600; }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #222; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+
+    /* ── Map placeholder ──────────────────────────────────── */
+    .map-area {
+      background: #d4d0c8;
+      position: relative;
+      overflow: hidden;
+    }
+    .map-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .map-road-h {
+      position: absolute; left: 0; right: 0; height: 6px;
+      background: rgba(255,255,255,0.7);
+    }
+    .map-road-v {
+      position: absolute; top: 0; bottom: 0; width: 6px;
+      background: rgba(255,255,255,0.7);
+    }
+    .map-pin {
+      position: absolute;
+      width: 28px; height: 28px; border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .map-controls {
+      position: absolute; top: 12px; right: 12px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .map-ctrl-btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 600; color: #555;
+      border-bottom: 1px solid #eee; cursor: pointer;
+    }
+    .map-ctrl-btn:last-child { border-bottom: none; }
+    .map-layer-toggle {
+      position: absolute; bottom: 12px; left: 12px;
+      display: flex; gap: 6px;
+    }
+    .layer-chip {
+      padding: 5px 10px; border-radius: 20px;
+      background: #fff; border: 1px solid #ddd;
+      font-size: 11px; font-weight: 600; color: #555;
+      cursor: pointer; white-space: nowrap;
+    }
+    .layer-chip.on { background: #111; color: #fff; border-color: #111; }
+
+    /* ── Score ring ───────────────────────────────────────── */
+    .score-ring {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 8px solid #eee;
+      border-top-color: #111; border-right-color: #111; border-bottom-color: #111;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .score-ring-lg {
+      width: 120px; height: 120px;
+      border-width: 10px;
+    }
+    .score-num { font-size: 26px; font-weight: 900; color: #111; }
+    .score-num-lg { font-size: 34px; }
+
+    /* ── Category bar ─────────────────────────────────────── */
+    .cat-row { margin-bottom: 12px; }
+    .cat-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .cat-name { font-size: 13px; font-weight: 600; color: #333; }
+    .cat-val  { font-size: 13px; color: #999; }
+    .cat-track { height: 6px; background: #eee; border-radius: 3px; }
+    .cat-fill  { height: 100%; background: #111; border-radius: 3px; }
+
+    /* ── Match card ───────────────────────────────────────── */
+    .match-card {
+      border: 1px solid #eee; border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 10px;
+      cursor: pointer; transition: border-color 0.1s;
+    }
+    .match-card:hover { border-color: #aaa; }
+    .match-card.selected { border-color: #111; border-width: 2px; }
+    .match-card-header { display: flex; gap: 12px; align-items: flex-start; }
+    .score-badge {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: #111; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 900; flex-shrink: 0;
+    }
+    .score-badge-amber { background: #e6a817; }
+    .score-badge-red   { background: #c0392b; }
+
+    /* ── Narrative lines ──────────────────────────────────── */
+    .narr { height: 10px; background: #f0f0f0; border-radius: 4px; margin-bottom: 9px; }
+    .narr.w100 { width: 100%; }
+    .narr.w85  { width: 85%; }
+    .narr.w70  { width: 70%; }
+    .narr.w55  { width: 55%; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 1: Landing                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen-label">1 / 5 — Landing page (/)</div>
+<div class="browser">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">housely.app</div>
+  </div>
+
+  <!-- Hero -->
+  <div style="background:#111; min-height:520px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 40px;">
+    <!-- faint map texture -->
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:48px 48px;"></div>
+    <!-- faint road overlays -->
+    <div style="position:absolute;left:0;right:0;top:38%;height:3px;background:rgba(255,255,255,0.08);"></div>
+    <div style="position:absolute;left:0;right:0;top:62%;height:3px;background:rgba(255,255,255,0.06);"></div>
+    <div style="position:absolute;top:0;bottom:0;left:28%;width:3px;background:rgba(255,255,255,0.06);"></div>
+    <div style="position:absolute;top:0;bottom:0;left:68%;width:3px;background:rgba(255,255,255,0.06);"></div>
+
+    <div style="position:relative;text-align:center;max-width:640px;">
+      <div style="font-size:48px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1;">Housely</div>
+      <div style="font-size:20px;color:rgba(255,255,255,0.55);margin-top:12px;font-weight:400;">Does this neighbourhood actually fit your life?</div>
+
+      <!-- Search input -->
+      <div style="margin-top:40px;display:flex;gap:0;max-width:520px;margin-left:auto;margin-right:auto;">
+        <div style="flex:1;background:#fff;border-radius:10px 0 0 10px;padding:16px 20px;font-size:16px;color:#bbb;border:2px solid #fff;border-right:none;">
+          Postcode or address — e.g. SW1A 1AA
+        </div>
+        <button class="btn" style="border-radius:0 10px 10px 0;padding:16px 28px;font-size:15px;">Analyse →</button>
+      </div>
+      <div style="margin-top:14px;font-size:13px;color:rgba(255,255,255,0.35);">
+        Real UK data · No sign-up required · Personalised to you
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div style="background:#fff;padding:64px 80px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="label" style="margin-bottom:10px;">How it works</div>
+      <div style="font-size:28px;font-weight:800;">Know before you view.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:32px;margin-bottom:64px;">
+      <div style="text-align:center;padding:28px 20px;background:#f7f7f7;border-radius:12px;">
+        <div style="width:40px;height:40px;background:#111;border-radius:50%;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">1</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Set your priorities</div>
+        <div style="font-size:13px;color:#777;line-height:1.5;">Tell us what matters — transport, schools, safety, green space.</div>
+      </div>
+      <div style="text-align:center;padding:28px 20px;background:#f7f7f7;border-radius:12px;">
+        <div style="width:40px;height:40px;background:#111;border-radius:50%;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">2</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Enter a property</div>
+        <div style="font-size:13px;color:#777;line-height:1.5;">Any UK postcode or address. Found one on Rightmove? Paste it in.</div>
+      </div>
+      <div style="text-align:center;padding:28px 20px;background:#f7f7f7;border-radius:12px;">
+        <div style="width:40px;height:40px;background:#111;border-radius:50%;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">3</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Get your score</div>
+        <div style="font-size:13px;color:#777;line-height:1.5;">15+ UK data sources, scored against your priorities by Claude AI.</div>
+      </div>
+      <div style="text-align:center;padding:28px 20px;border:2px dashed #ddd;border-radius:12px;position:relative;">
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:10px;">NEW</div>
+        <div style="width:40px;height:40px;background:#111;border-radius:50%;color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">4</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Let Scout find you</div>
+        <div style="font-size:13px;color:#777;line-height:1.5;">Our agent scans your target areas and surfaces matches ranked for you.</div>
+      </div>
+    </div>
+
+    <!-- Scout agent CTA banner -->
+    <div style="background:#f7f7f7;border-radius:14px;padding:36px 48px;display:flex;align-items:center;gap:48px;">
+      <div style="flex:1;">
+        <div class="label" style="margin-bottom:8px;">Scout agent</div>
+        <div style="font-size:22px;font-weight:800;line-height:1.3;margin-bottom:10px;">Tell us your ideal home. We'll find it.</div>
+        <div style="font-size:14px;color:#777;line-height:1.6;max-width:480px;">Set your target areas, budget, and property type. Scout analyses candidate postcodes every day and ranks them against your lifestyle profile — so you only view what's actually worth your time.</div>
+        <div style="margin-top:20px;display:flex;gap:12px;">
+          <button class="btn">Set up Scout →</button>
+          <button class="btn btn-outline">See how it works</button>
+        </div>
+      </div>
+      <!-- Mini preview of matches page -->
+      <div style="width:320px;flex-shrink:0;border:1px solid #ddd;border-radius:10px;overflow:hidden;background:#fff;">
+        <div style="background:#111;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+          <div style="font-size:12px;font-weight:700;color:#fff;">Scout — 8 new matches</div>
+          <div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:#4caf50;"></div>
+        </div>
+        <div style="padding:12px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">92</div>
+            <div><div style="font-size:13px;font-weight:700;">Thornton Heath, CR7</div><div style="font-size:11px;color:#999;margin-top:2px;">3 bed · £385k · Strong match</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#555;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">85</div>
+            <div><div style="font-size:13px;font-weight:700;">Tooting Bec, SW17</div><div style="font-size:11px;color:#999;margin-top:2px;">2 bed · £420k · Good match</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#888;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">71</div>
+            <div><div style="font-size:13px;font-weight:700;">Streatham, SW16</div><div style="font-size:11px;color:#999;margin-top:2px;">2 bed · £395k · Moderate</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 2: Profile setup (single-page, not wizard)       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen-label">2 / 5 — Profile setup (/profile) — one page, two columns</div>
+<div class="browser">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">housely.app/profile</div>
+  </div>
+
+  <div class="topnav">
+    <div class="wordmark">Housely</div>
+    <div class="nav-links">
+      <div class="nav-link">Search</div>
+      <div class="nav-link">Matches</div>
+      <div class="nav-link">Saved</div>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-sm">Save profile</button>
+    </div>
+  </div>
+
+  <div style="background:#fff;padding:48px 80px;display:grid;grid-template-columns:1fr 1fr;gap:64px;min-height:700px;">
+
+    <!-- Left: lifestyle -->
+    <div>
+      <div style="margin-bottom:28px;">
+        <div class="label" style="margin-bottom:8px;">Your lifestyle</div>
+        <div style="font-size:24px;font-weight:800;">What matters to you?</div>
+        <div style="font-size:14px;color:#777;margin-top:6px;">We weight your score against these priorities.</div>
+      </div>
+
+      <!-- Priority grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px;">
+        <div style="border:2px solid #111;border-radius:10px;padding:14px 10px;text-align:center;background:#f7f7f7;">
+          <div style="font-size:20px;margin-bottom:4px;">🚆</div>
+          <div style="font-size:12px;font-weight:700;">Transport</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">🏫</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">Schools</div>
+        </div>
+        <div style="border:2px solid #111;border-radius:10px;padding:14px 10px;text-align:center;background:#f7f7f7;">
+          <div style="font-size:20px;margin-bottom:4px;">🛡️</div>
+          <div style="font-size:12px;font-weight:700;">Safety</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">🌿</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">Green space</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">🛒</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">Amenities</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">💨</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">Air quality</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">🌊</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">Flood risk</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">📈</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">Price growth</div>
+        </div>
+        <div style="border:2px solid #eee;border-radius:10px;padding:14px 10px;text-align:center;">
+          <div style="font-size:20px;margin-bottom:4px;">🏥</div>
+          <div style="font-size:12px;font-weight:600;color:#777;">GP / health</div>
+        </div>
+      </div>
+
+      <!-- Commute -->
+      <div style="margin-bottom:24px;">
+        <div class="label" style="margin-bottom:8px;">Commute tolerance</div>
+        <div style="height:4px;background:#eee;border-radius:2px;position:relative;margin-bottom:8px;">
+          <div style="width:50%;height:100%;background:#111;border-radius:2px;"></div>
+          <div style="width:16px;height:16px;border-radius:50%;background:#111;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);position:absolute;top:-6px;left:calc(50% - 8px);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#aaa;">
+          <span>5 min</span><span style="font-weight:700;color:#111;">30 min</span><span>60+ min</span>
+        </div>
+      </div>
+
+      <!-- Life stage -->
+      <div>
+        <div class="label" style="margin-bottom:8px;">Life stage</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag" style="background:#111;color:#fff;">Young professional</span>
+          <span class="tag">Couple</span>
+          <span class="tag">Family with children</span>
+          <span class="tag">Dog owner</span>
+          <span class="tag">Retired</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: ideal home -->
+    <div>
+      <div style="margin-bottom:28px;">
+        <div class="label" style="margin-bottom:8px;">Scout agent setup</div>
+        <div style="font-size:24px;font-weight:800;">Your ideal home</div>
+        <div style="font-size:14px;color:#777;margin-top:6px;">Scout will search these criteria automatically.</div>
+      </div>
+
+      <!-- Property type -->
+      <div style="margin-bottom:24px;">
+        <div class="label" style="margin-bottom:8px;">Property type</div>
+        <div style="display:flex;gap:8px;">
+          <span class="tag" style="background:#111;color:#fff;">Flat</span>
+          <span class="tag">Terraced</span>
+          <span class="tag">Semi-detached</span>
+          <span class="tag">Detached</span>
+          <span class="tag">Any</span>
+        </div>
+      </div>
+
+      <!-- Bedrooms -->
+      <div style="margin-bottom:24px;">
+        <div class="label" style="margin-bottom:8px;">Bedrooms</div>
+        <div style="display:flex;gap:8px;">
+          <span class="tag">1</span>
+          <span class="tag" style="background:#111;color:#fff;">2</span>
+          <span class="tag" style="background:#111;color:#fff;">3</span>
+          <span class="tag">4+</span>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div style="margin-bottom:24px;">
+        <div class="label" style="margin-bottom:8px;">Max budget</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="border:2px solid #eee;border-radius:8px;padding:10px 16px;font-size:15px;font-weight:600;flex:1;">£ 450,000</div>
+        </div>
+      </div>
+
+      <!-- Target areas -->
+      <div style="margin-bottom:24px;">
+        <div class="label" style="margin-bottom:8px;">Target areas</div>
+        <div style="border:2px solid #eee;border-radius:8px;padding:10px 14px;font-size:14px;color:#bbb;margin-bottom:8px;">Add a postcode district — e.g. SW17, E3, B1…</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag" style="background:#111;color:#fff;">SW17 ×</span>
+          <span class="tag" style="background:#111;color:#fff;">CR7 ×</span>
+          <span class="tag" style="background:#111;color:#fff;">SE15 ×</span>
+          <span class="tag" style="background:#111;color:#fff;">SW16 ×</span>
+        </div>
+      </div>
+
+      <!-- Must-haves -->
+      <div style="margin-bottom:32px;">
+        <div class="label" style="margin-bottom:8px;">Must-haves</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag" style="background:#111;color:#fff;">Garden</span>
+          <span class="tag">Parking</span>
+          <span class="tag">Near tube</span>
+          <span class="tag">Quiet street</span>
+        </div>
+      </div>
+
+      <button class="btn" style="width:100%;padding:14px;">Save profile &amp; start Scout →</button>
+      <div style="text-align:center;margin-top:12px;font-size:13px;color:#aaa;">You can edit this any time from your profile.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 3: Suitability report (two-panel)                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen-label">3 / 5 — Suitability report (/report/[id]) — analysis left · map right</div>
+<div class="browser">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">housely.app/report/abc123</div>
+  </div>
+
+  <div class="topnav">
+    <div class="wordmark">Housely</div>
+    <div class="nav-links">
+      <div class="nav-link active">Search</div>
+      <div class="nav-link">Matches</div>
+      <div class="nav-link">Saved</div>
+    </div>
+    <div class="nav-right">
+      <div class="avatar">AW</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:440px 1fr;height:780px;">
+
+    <!-- Left: report panel -->
+    <div style="border-right:1px solid #eee;overflow-y:auto;display:flex;flex-direction:column;">
+
+      <!-- Address header -->
+      <div style="padding:20px 24px;border-bottom:1px solid #eee;">
+        <div style="font-size:11px;color:#aaa;margin-bottom:4px;">← Back to search</div>
+        <div style="font-size:17px;font-weight:800;line-height:1.3;">14 Acacia Avenue</div>
+        <div style="font-size:13px;color:#888;margin-top:2px;">SW1A 1AA · Westminster, London</div>
+        <div style="margin-top:10px;display:flex;gap:6px;">
+          <span class="tag tag-green">Low flood risk</span>
+          <span class="tag tag-amber">Moderate crime</span>
+          <span class="tag tag-green">Good transport</span>
+        </div>
+      </div>
+
+      <!-- Score -->
+      <div style="padding:20px 24px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:20px;">
+        <div class="score-ring score-ring-lg">
+          <div class="score-num score-num-lg">78</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#aaa;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Suitability score</div>
+          <div style="font-size:22px;font-weight:900;margin-top:2px;">Strong match</div>
+          <div style="font-size:13px;color:#777;margin-top:4px;">Based on your priorities</div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn btn-sm">Save</button>
+            <button class="btn btn-sm btn-outline">Compare</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score breakdown -->
+      <div style="padding:20px 24px;border-bottom:1px solid #eee;">
+        <div class="label" style="margin-bottom:14px;">Score breakdown</div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name">Transport</span><span class="cat-val">88</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:88%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name">Safety &amp; crime</span><span class="cat-val">62</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:62%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name">Amenities</span><span class="cat-val">81</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:81%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name">Flood risk</span><span class="cat-val">91</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:91%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name">Air quality</span><span class="cat-val">55</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:55%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name">Price growth</span><span class="cat-val">74</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:74%;"></div></div>
+        </div>
+      </div>
+
+      <!-- AI narrative (streaming) -->
+      <div style="padding:20px 24px;flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <div class="label">AI analysis</div>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <div style="width:6px;height:6px;background:#111;border-radius:50%;"></div>
+            <span style="font-size:11px;color:#aaa;">streaming…</span>
+          </div>
+        </div>
+        <div class="narr w100"></div>
+        <div class="narr w85"></div>
+        <div class="narr w100"></div>
+        <div class="narr w70"></div>
+        <div style="height:12px;"></div>
+        <div class="narr w100"></div>
+        <div class="narr w85"></div>
+        <div class="narr w55"></div>
+        <div style="height:12px;"></div>
+        <div class="narr w100"></div>
+        <div class="narr w85"></div>
+      </div>
+    </div>
+
+    <!-- Right: map -->
+    <div class="map-area" style="height:780px;position:relative;">
+      <div class="map-grid"></div>
+      <div class="map-road-h" style="top:35%;"></div>
+      <div class="map-road-h" style="top:55%;height:4px;opacity:0.8;"></div>
+      <div class="map-road-h" style="top:70%;"></div>
+      <div class="map-road-v" style="left:30%;"></div>
+      <div class="map-road-v" style="left:60%;"></div>
+      <div class="map-road-v" style="left:75%;width:4px;"></div>
+
+      <!-- Property pin -->
+      <div class="map-pin" style="top:47%;left:57%;background:#111;transform:rotate(-45deg) translate(-50%,-50%);">
+      </div>
+
+      <!-- Amenity dots -->
+      <div style="position:absolute;top:38%;left:45%;width:10px;height:10px;border-radius:50%;background:#4caf50;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);" title="Supermarket"></div>
+      <div style="position:absolute;top:52%;left:40%;width:10px;height:10px;border-radius:50%;background:#4caf50;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);" title="Park"></div>
+      <div style="position:absolute;top:42%;left:68%;width:10px;height:10px;border-radius:50%;background:#2196f3;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);" title="Tube station"></div>
+      <div style="position:absolute;top:62%;left:65%;width:10px;height:10px;border-radius:50%;background:#ff9800;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);" title="Crime hotspot"></div>
+
+      <div class="map-controls">
+        <div class="map-ctrl-btn">+</div>
+        <div class="map-ctrl-btn">−</div>
+      </div>
+      <div class="map-layer-toggle">
+        <div class="layer-chip on">Amenities</div>
+        <div class="layer-chip on">Transport</div>
+        <div class="layer-chip">Crime</div>
+        <div class="layer-chip">Flood</div>
+        <div class="layer-chip">Air</div>
+      </div>
+
+      <!-- Legend -->
+      <div style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.95);border:1px solid #ddd;border-radius:8px;padding:10px 14px;font-size:11px;font-weight:600;color:#555;line-height:2;">
+        <div>📍 Property</div>
+        <div style="color:#4caf50;">● Amenity</div>
+        <div style="color:#2196f3;">● Transport</div>
+        <div style="color:#ff9800;">● Crime</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 4: Scout agent dashboard (/matches)              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen-label">4 / 5 — Scout agent dashboard (/matches) — ranked list left · pin map right</div>
+<div class="browser">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">housely.app/matches</div>
+  </div>
+
+  <div class="topnav">
+    <div class="wordmark">Housely</div>
+    <div class="nav-links">
+      <div class="nav-link">Search</div>
+      <div class="nav-link active">Matches</div>
+      <div class="nav-link">Saved</div>
+    </div>
+    <div class="nav-right">
+      <div class="avatar">AW</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:400px 1fr;height:780px;">
+
+    <!-- Left: list panel -->
+    <div style="border-right:1px solid #eee;display:flex;flex-direction:column;">
+
+      <!-- Panel header -->
+      <div style="padding:16px 20px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px;">
+        <div>
+          <div style="font-size:16px;font-weight:800;">Scout matches</div>
+          <div style="font-size:12px;color:#aaa;margin-top:2px;">Last run: 2 hours ago · SW17, CR7, SE15, SW16</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#4caf50;"></div>
+          <span style="font-size:12px;font-weight:600;color:#4caf50;">Active</span>
+          <button class="btn btn-sm btn-outline" style="margin-left:6px;">Run now</button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div style="padding:12px 20px;border-bottom:1px solid #eee;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:12px;font-weight:600;color:#aaa;">Filter:</span>
+        <span class="tag" style="font-size:11px;">Score ≥ 70</span>
+        <span class="tag" style="font-size:11px;">≤ £450k</span>
+        <span class="tag" style="font-size:11px;">2–3 bed</span>
+        <span class="tag" style="font-size:11px;background:#111;color:#fff;">+ Add filter</span>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:1px solid #eee;">
+        <div style="flex:1;text-align:center;padding:10px;font-size:13px;font-weight:700;border-bottom:2px solid #111;color:#111;">New (8)</div>
+        <div style="flex:1;text-align:center;padding:10px;font-size:13px;font-weight:500;color:#aaa;">All (24)</div>
+        <div style="flex:1;text-align:center;padding:10px;font-size:13px;font-weight:500;color:#aaa;">Saved (3)</div>
+      </div>
+
+      <!-- Match list -->
+      <div style="flex:1;overflow-y:auto;padding:14px 16px;">
+
+        <div class="match-card selected">
+          <div class="match-card-header">
+            <div class="score-badge">92</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;">Thornton Heath, CR7 8HL</div>
+              <div style="font-size:12px;color:#888;margin-top:2px;">3 bed flat · est. £385k · found today</div>
+              <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap;">
+                <span class="tag tag-green" style="font-size:11px;">Transport ✓</span>
+                <span class="tag tag-green" style="font-size:11px;">Safety ✓</span>
+                <span class="tag tag-amber" style="font-size:11px;">Air ⚠</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:#888;">Click to view full report →</span>
+            <button class="btn btn-sm">View</button>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="match-card-header">
+            <div class="score-badge" style="background:#444;">85</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;">Tooting Bec, SW17 9QA</div>
+              <div style="font-size:12px;color:#888;margin-top:2px;">2 bed flat · est. £420k · found today</div>
+              <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap;">
+                <span class="tag tag-green" style="font-size:11px;">Transport ✓</span>
+                <span class="tag tag-amber" style="font-size:11px;">Safety ⚠</span>
+                <span class="tag tag-green" style="font-size:11px;">Flood ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="match-card-header">
+            <div class="score-badge" style="background:#666;">78</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;">Streatham, SW16 1EL</div>
+              <div style="font-size:12px;color:#888;margin-top:2px;">2 bed flat · est. £395k · found today</div>
+              <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap;">
+                <span class="tag tag-green" style="font-size:11px;">Transport ✓</span>
+                <span class="tag tag-green" style="font-size:11px;">Flood ✓</span>
+                <span class="tag tag-red" style="font-size:11px;">Crime ✗</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="match-card-header">
+            <div class="score-badge" style="background:#888;">71</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;">Peckham, SE15 4BQ</div>
+              <div style="font-size:12px;color:#888;margin-top:2px;">3 bed terraced · est. £440k · found today</div>
+              <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap;">
+                <span class="tag tag-amber" style="font-size:11px;">Transport ⚠</span>
+                <span class="tag tag-amber" style="font-size:11px;">Safety ⚠</span>
+                <span class="tag tag-green" style="font-size:11px;">Air ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent status footer -->
+        <div style="background:#f7f7f7;border-radius:10px;padding:14px 16px;margin-top:8px;font-size:12px;color:#888;line-height:1.6;">
+          <div style="font-weight:700;color:#555;margin-bottom:4px;">Scout is running daily</div>
+          Scanning ~240 postcodes across your 4 target areas. Next run in 22 hours.
+          <div style="margin-top:8px;">
+            <button class="btn btn-sm btn-outline" style="font-size:11px;padding:5px 12px;">Edit target areas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: pin map -->
+    <div class="map-area" style="height:780px;position:relative;">
+      <div class="map-grid"></div>
+      <div class="map-road-h" style="top:25%;"></div>
+      <div class="map-road-h" style="top:45%;height:5px;"></div>
+      <div class="map-road-h" style="top:65%;"></div>
+      <div class="map-road-h" style="top:80%;"></div>
+      <div class="map-road-v" style="left:25%;"></div>
+      <div class="map-road-v" style="left:50%;width:5px;"></div>
+      <div class="map-road-v" style="left:72%;"></div>
+
+      <!-- Score pins: green=90+, mid=70-89, amber=50-69 -->
+      <!-- Selected pin (Thornton Heath) -->
+      <div style="position:absolute;top:58%;left:62%;transform:translate(-50%,-50%);">
+        <div style="width:38px;height:38px;border-radius:50%;background:#111;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">92</div>
+      </div>
+      <!-- Tooting Bec -->
+      <div style="position:absolute;top:42%;left:38%;transform:translate(-50%,-50%);">
+        <div style="width:34px;height:34px;border-radius:50%;background:#444;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;">85</div>
+      </div>
+      <!-- Streatham -->
+      <div style="position:absolute;top:55%;left:30%;transform:translate(-50%,-50%);">
+        <div style="width:34px;height:34px;border-radius:50%;background:#666;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;">78</div>
+      </div>
+      <!-- Peckham -->
+      <div style="position:absolute;top:35%;left:72%;transform:translate(-50%,-50%);">
+        <div style="width:32px;height:32px;border-radius:50%;background:#888;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;">71</div>
+      </div>
+      <!-- More faint pins -->
+      <div style="position:absolute;top:70%;left:55%;transform:translate(-50%,-50%);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#aaa;border:2px solid #fff;opacity:0.6;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">64</div>
+      </div>
+      <div style="position:absolute;top:28%;left:50%;transform:translate(-50%,-50%);">
+        <div style="width:28px;height:28px;border-radius:50%;background:#bbb;border:2px solid #fff;opacity:0.6;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">59</div>
+      </div>
+
+      <!-- Tooltip for selected pin -->
+      <div style="position:absolute;top:46%;left:64%;background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px 14px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:180px;">
+        <div style="font-weight:700;margin-bottom:2px;">Thornton Heath, CR7</div>
+        <div style="color:#888;font-size:11px;">Score 92 · 3 bed · ~£385k</div>
+        <div style="margin-top:6px;display:flex;gap:4px;">
+          <span class="tag tag-green" style="font-size:10px;">Transport ✓</span>
+          <span class="tag tag-green" style="font-size:10px;">Safety ✓</span>
+        </div>
+      </div>
+
+      <div class="map-controls">
+        <div class="map-ctrl-btn">+</div>
+        <div class="map-ctrl-btn">−</div>
+      </div>
+
+      <!-- Legend -->
+      <div style="position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);border:1px solid #ddd;border-radius:8px;padding:10px 14px;font-size:11px;font-weight:600;line-height:2;">
+        <div style="color:#aaa;letter-spacing:1px;text-transform:uppercase;font-size:10px;margin-bottom:4px;">Score</div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#111;"></div> 90+</div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#555;"></div> 75–89</div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#999;"></div> 60–74</div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#ccc;opacity:0.8;"></div> &lt; 60</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 5: Saved (tab within matches)                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen-label">5 / 5 — Saved reports — tab within /matches, compare mode</div>
+<div class="browser">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">housely.app/matches?tab=saved</div>
+  </div>
+
+  <div class="topnav">
+    <div class="wordmark">Housely</div>
+    <div class="nav-links">
+      <div class="nav-link">Search</div>
+      <div class="nav-link active">Matches</div>
+      <div class="nav-link">Saved</div>
+    </div>
+    <div class="nav-right">
+      <div class="avatar">AW</div>
+    </div>
+  </div>
+
+  <!-- Tab bar replaces list header -->
+  <div style="background:#fff;border-bottom:1px solid #eee;padding:0 24px;display:flex;gap:0;align-items:center;">
+    <div style="padding:14px 20px;font-size:14px;font-weight:500;color:#aaa;cursor:pointer;">New (8)</div>
+    <div style="padding:14px 20px;font-size:14px;font-weight:500;color:#aaa;cursor:pointer;">All (24)</div>
+    <div style="padding:14px 20px;font-size:14px;font-weight:700;color:#111;border-bottom:2px solid #111;cursor:pointer;">Saved (3)</div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+      <button class="btn btn-sm btn-outline">Compare selected</button>
+    </div>
+  </div>
+
+  <!-- 3-column saved report grid + compare panel -->
+  <div style="background:#f7f7f7;padding:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;min-height:680px;align-items:start;">
+
+    <!-- Saved card 1 -->
+    <div style="background:#fff;border:2px solid #111;border-radius:14px;overflow:hidden;">
+      <div style="background:#111;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#111;flex-shrink:0;">78</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">14 Acacia Avenue</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">SW1A 1AA · saved 22 Apr</div>
+        </div>
+      </div>
+      <div style="padding:16px;">
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Transport</span><span class="cat-val" style="font-size:12px;">88</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:88%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Safety</span><span class="cat-val" style="font-size:12px;">62</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:62%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Air quality</span><span class="cat-val" style="font-size:12px;">55</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:55%;"></div></div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;">
+          <span class="tag tag-green" style="font-size:11px;">Good transport</span>
+          <span class="tag tag-amber" style="font-size:11px;">Crime ⚠</span>
+        </div>
+        <button class="btn btn-sm" style="width:100%;margin-top:12px;">View report</button>
+      </div>
+    </div>
+
+    <!-- Saved card 2 -->
+    <div style="background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden;">
+      <div style="background:#444;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#444;flex-shrink:0;">61</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">Canal St, Manchester</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">M1 3AB · saved 19 Apr</div>
+        </div>
+      </div>
+      <div style="padding:16px;">
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Transport</span><span class="cat-val" style="font-size:12px;">79</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:79%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Safety</span><span class="cat-val" style="font-size:12px;">44</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:44%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Air quality</span><span class="cat-val" style="font-size:12px;">68</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:68%;"></div></div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;">
+          <span class="tag tag-amber" style="font-size:11px;">Safety ⚠</span>
+          <span class="tag tag-green" style="font-size:11px;">Flood ✓</span>
+        </div>
+        <button class="btn btn-sm btn-outline" style="width:100%;margin-top:12px;">View report</button>
+      </div>
+    </div>
+
+    <!-- Saved card 3 -->
+    <div style="background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden;">
+      <div style="background:#888;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#888;flex-shrink:0;">42</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">Clifton Road, Bristol</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">BS8 1AF · saved 14 Apr</div>
+        </div>
+      </div>
+      <div style="padding:16px;">
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Transport</span><span class="cat-val" style="font-size:12px;">38</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:38%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Safety</span><span class="cat-val" style="font-size:12px;">71</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:71%;"></div></div>
+        </div>
+        <div class="cat-row">
+          <div class="cat-header"><span class="cat-name" style="font-size:12px;">Flood risk</span><span class="cat-val" style="font-size:12px;">29</span></div>
+          <div class="cat-track"><div class="cat-fill" style="width:29%;"></div></div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;">
+          <span class="tag tag-red" style="font-size:11px;">Transport ✗</span>
+          <span class="tag tag-red" style="font-size:11px;">Flood ✗</span>
+        </div>
+        <button class="btn btn-sm btn-ghost" style="width:100%;margin-top:12px;font-size:12px;color:#bbb;">Remove</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 6: Preference learning panel (drawer over app)   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen-label">6 / 6 — Preference learning panel — drawer opened from nav avatar</div>
+<div class="browser">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">housely.app/report/abc123</div>
+  </div>
+
+  <!-- Top nav with notification badge on avatar -->
+  <div class="topnav">
+    <div class="wordmark">Housely</div>
+    <div class="nav-links">
+      <div class="nav-link active">Search</div>
+      <div class="nav-link">Matches</div>
+      <div class="nav-link">Saved</div>
+    </div>
+    <div class="nav-right">
+      <!-- Avatar with red dot = Scout has a new inference -->
+      <div style="position:relative;">
+        <div class="avatar">AW</div>
+        <div style="position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:#e74c3c;border:2px solid #fff;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dimmed app behind drawer -->
+  <div style="position:relative;height:780px;overflow:hidden;">
+
+    <!-- Background: faint report page -->
+    <div style="position:absolute;inset:0;display:grid;grid-template-columns:440px 1fr;opacity:0.25;pointer-events:none;">
+      <div style="border-right:1px solid #eee;background:#fff;padding:24px;">
+        <div style="height:18px;background:#eee;border-radius:4px;margin-bottom:12px;width:60%;"></div>
+        <div style="height:80px;background:#f5f5f5;border-radius:12px;margin-bottom:16px;"></div>
+        <div style="height:12px;background:#eee;border-radius:4px;margin-bottom:8px;"></div>
+        <div style="height:12px;background:#eee;border-radius:4px;margin-bottom:8px;width:80%;"></div>
+        <div style="height:12px;background:#eee;border-radius:4px;width:70%;"></div>
+      </div>
+      <div style="background:#d4d0c8;"></div>
+    </div>
+
+    <!-- Overlay scrim -->
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+
+    <!-- Drawer panel (slides in from right) -->
+    <div style="position:absolute;top:0;right:0;bottom:0;width:480px;background:#fff;box-shadow:-8px 0 40px rgba(0,0,0,0.18);display:flex;flex-direction:column;">
+
+      <!-- Drawer header -->
+      <div style="padding:20px 24px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:12px;">
+        <div>
+          <div style="font-size:17px;font-weight:800;">Your preferences</div>
+          <div style="font-size:12px;color:#aaa;margin-top:2px;">Scout updates these as it learns from you</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;color:#bbb;cursor:pointer;line-height:1;">×</div>
+      </div>
+
+      <!-- New inference card — prominent, needs action -->
+      <div style="margin:16px;border:2px solid #111;border-radius:12px;overflow:hidden;">
+        <div style="background:#111;padding:12px 16px;display:flex;align-items:center;gap:10px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#e74c3c;flex-shrink:0;"></div>
+          <div style="font-size:12px;font-weight:700;color:#fff;">Scout noticed something · 2 hours ago</div>
+        </div>
+        <div style="padding:16px;">
+          <div style="font-size:14px;font-weight:600;color:#111;line-height:1.5;margin-bottom:10px;">
+            "You've dismissed 4 properties where safety scored below 65, even when their overall scores were above 75. Your declared safety weight (15%) seems too low."
+          </div>
+          <div style="background:#f7f7f7;border-radius:8px;padding:12px;margin-bottom:14px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#aaa;margin-bottom:10px;">Proposed weight change</div>
+            <!-- Before/after comparison for Safety -->
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;">
+                <span>Safety</span>
+                <span style="color:#aaa;">15% <span style="color:#111;">→ 27%</span></span>
+              </div>
+              <div style="height:6px;background:#eee;border-radius:3px;position:relative;">
+                <div style="height:100%;width:15%;background:#ccc;border-radius:3px;position:absolute;"></div>
+                <div style="height:100%;width:27%;background:#111;border-radius:3px;"></div>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;">
+                <span>Transport</span>
+                <span style="color:#aaa;">25% <span style="color:#111;">→ 18%</span></span>
+              </div>
+              <div style="height:6px;background:#eee;border-radius:3px;position:relative;">
+                <div style="height:100%;width:25%;background:#ccc;border-radius:3px;position:absolute;"></div>
+                <div style="height:100%;width:18%;background:#111;border-radius:3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;">
+                <span>Air quality</span>
+                <span style="color:#aaa;">10% <span style="color:#111;">→ 10%</span></span>
+              </div>
+              <div style="height:6px;background:#eee;border-radius:3px;">
+                <div style="height:100%;width:10%;background:#111;border-radius:3px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#777;margin-bottom:14px;line-height:1.5;">
+            Accepting this will recalculate scores for all your saved and matched reports.
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn" style="flex:1;">Accept changes</button>
+            <button class="btn btn-outline" style="flex:1;">Dismiss</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current weights -->
+      <div style="padding:0 24px 16px;flex:1;overflow-y:auto;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#aaa;margin-bottom:14px;">Current weights</div>
+
+        <!-- Weight bars with manual override hint -->
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;font-weight:600;">Transport</span>
+            <span style="font-size:12px;color:#999;">25%</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;cursor:pointer;">
+            <div style="height:100%;width:25%;background:#111;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;font-weight:600;">Safety</span>
+            <span style="font-size:12px;color:#999;">15%</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;cursor:pointer;">
+            <div style="height:100%;width:15%;background:#111;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;font-weight:600;">Amenities</span>
+            <span style="font-size:12px;color:#999;">20%</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;cursor:pointer;">
+            <div style="height:100%;width:20%;background:#111;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;font-weight:600;">Flood risk</span>
+            <span style="font-size:12px;color:#999;">15%</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;cursor:pointer;">
+            <div style="height:100%;width:15%;background:#111;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;font-weight:600;">Air quality</span>
+            <span style="font-size:12px;color:#999;">10%</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;cursor:pointer;">
+            <div style="height:100%;width:10%;background:#111;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;font-weight:600;">Price growth</span>
+            <span style="font-size:12px;color:#999;">15%</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;cursor:pointer;">
+            <div style="height:100%;width:15%;background:#111;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#bbb;text-align:center;margin-bottom:20px;">Click any bar to adjust manually · weights must sum to 100%</div>
+
+        <!-- Inference history -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#aaa;margin-bottom:12px;">Learning history</div>
+        <div style="border-left:2px solid #eee;padding-left:14px;display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="font-size:12px;color:#aaa;margin-bottom:3px;">3 days ago · accepted</div>
+            <div style="font-size:13px;font-weight:600;color:#555;">Flood risk ↑ 8% → 15%</div>
+            <div style="font-size:12px;color:#888;margin-top:2px;">"You toggled the flood layer on every report and saved only properties with flood score > 80."</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#aaa;margin-bottom:3px;">6 days ago · dismissed</div>
+            <div style="font-size:13px;font-weight:600;color:#bbb;">Schools ↑ 5% → 12%</div>
+            <div style="font-size:12px;color:#aaa;margin-top:2px;">"Dismissed — you confirmed you have no children."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- BONUS: "Why this score?" section shown on report page   -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div class="screen-label">Bonus — "Why this score?" breakdown (appears in report left panel below AI analysis)</div>
+<div class="browser" style="width:480px;">
+  <div class="browser-chrome">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">report left panel detail</div>
+  </div>
+  <div style="background:#fff;padding:20px 24px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <div class="label">Why 78?</div>
+      <div style="font-size:11px;color:#aaa;">weight × raw score = contribution</div>
+    </div>
+
+    <!-- Contribution bars: each shows weight × raw score visually -->
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:600;">Transport</span>
+        <span style="color:#888;">25% × 88 = <strong style="color:#111;">22 pts</strong></span>
+      </div>
+      <div style="height:10px;background:#f0f0f0;border-radius:5px;">
+        <div style="height:100%;width:78%;background:#111;border-radius:5px;opacity:0.9;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:600;">Safety</span>
+        <span style="color:#888;">15% × 62 = <strong style="color:#111;">9 pts</strong></span>
+      </div>
+      <div style="height:10px;background:#f0f0f0;border-radius:5px;">
+        <div style="height:100%;width:32%;background:#111;border-radius:5px;opacity:0.7;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:600;">Amenities</span>
+        <span style="color:#888;">20% × 81 = <strong style="color:#111;">16 pts</strong></span>
+      </div>
+      <div style="height:10px;background:#f0f0f0;border-radius:5px;">
+        <div style="height:100%;width:58%;background:#111;border-radius:5px;opacity:0.8;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:600;">Flood risk</span>
+        <span style="color:#888;">15% × 91 = <strong style="color:#111;">14 pts</strong></span>
+      </div>
+      <div style="height:10px;background:#f0f0f0;border-radius:5px;">
+        <div style="height:100%;width:49%;background:#111;border-radius:5px;opacity:0.8;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:600;">Air quality</span>
+        <span style="color:#888;">10% × 55 = <strong style="color:#111;">6 pts</strong></span>
+      </div>
+      <div style="height:10px;background:#f0f0f0;border-radius:5px;">
+        <div style="height:100%;width:21%;background:#111;border-radius:5px;opacity:0.6;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:600;">Price growth</span>
+        <span style="color:#888;">15% × 74 = <strong style="color:#111;">11 pts</strong></span>
+      </div>
+      <div style="height:10px;background:#f0f0f0;border-radius:5px;">
+        <div style="height:100%;width:39%;background:#111;border-radius:5px;opacity:0.7;"></div>
+      </div>
+    </div>
+
+    <div style="background:#f7f7f7;border-radius:8px;padding:12px 14px;font-size:12px;color:#777;line-height:1.5;border-left:3px solid #ddd;">
+      If Scout accepted the pending safety weight change (15% → 27%), this score would drop to <strong style="color:#111;">74</strong>.
+      <span style="color:#111;font-weight:600;cursor:pointer;"> Review →</span>
+    </div>
+  </div>
+</div>
+
+<div style="height:40px;"></div>
+</body>
+</html>

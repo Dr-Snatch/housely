@@ -20,14 +20,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               Housely
             </Link>
             <nav className="flex items-center gap-1 text-sm font-medium text-stone-500">
-              <Link href="/search" className="px-3 py-1.5 rounded-md hover:bg-stone-100 hover:text-stone-900 transition-colors">
+              <Link href="/" className="px-3 py-1.5 rounded-md hover:bg-stone-100 hover:text-stone-900 transition-colors">
                 Search
+              </Link>
+              <Link href="/profile" className="px-3 py-1.5 rounded-md hover:bg-stone-100 hover:text-stone-900 transition-colors">
+                Profile
               </Link>
               <Link href="/matches" className="px-3 py-1.5 rounded-md hover:bg-stone-100 hover:text-stone-900 transition-colors">
                 Matches
-              </Link>
-              <Link href="/saved" className="px-3 py-1.5 rounded-md hover:bg-stone-100 hover:text-stone-900 transition-colors">
-                Saved
               </Link>
             </nav>
           </div>

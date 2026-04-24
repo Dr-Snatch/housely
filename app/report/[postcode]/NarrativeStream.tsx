@@ -1,9 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { SYSTEM_PROMPT } from '@/lib/prompts'
 
-export default function NarrativeStream({ prompt }: { prompt: string }) {
+export default function NarrativeStream({
+  systemPrompt,
+  prompt,
+}: {
+  systemPrompt: string
+  prompt: string
+}) {
   const [text, setText] = useState('')
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -18,7 +23,7 @@ export default function NarrativeStream({ prompt }: { prompt: string }) {
         const res = await fetch('/api/narrative', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ systemPrompt: SYSTEM_PROMPT, userPrompt: prompt }),
+          body: JSON.stringify({ systemPrompt, userPrompt: prompt }),
         })
         if (!res.ok) throw new Error(`API error ${res.status}`)
 
@@ -38,7 +43,7 @@ export default function NarrativeStream({ prompt }: { prompt: string }) {
     }
 
     stream()
-  }, [prompt])
+  }, [systemPrompt, prompt])
 
   if (error) {
     return (
