@@ -16,7 +16,7 @@
 - [x] lib/preferences.ts — applyInference, getWeightedScore, explainScore, diffWeights, scoreVerdict [ACCOUNT-1]
 - [ ] /api/agent/run route — runs scout agent for a given IdealHomeProfile, streams progress + results
 - [ ] /api/learn route — accepts last N InteractionEvents + current PreferenceVector; Claude analyses for weight mismatches; returns PreferenceInference (proposed weight changes + plain-English explanation)
-- [ ] Profile UI (/profile) — desktop: single page, two-column (lifestyle left, ideal home right) — NOT a step wizard
+- [ ] Profile UI (/profile) — desktop: single page, two-column (lifestyle left, ideal home right) — NOT a step wizard [ACCOUNT-1]
 - [ ] Property search page (/search)
 - [ ] /report/[id] page — desktop two-panel: score + breakdown + streaming AI narrative left, interactive Leaflet map right with toggleable layers (amenities, crime, flood, transport); log view event on mount; log layer toggles
 - [ ] /report/[id] page — "Why this score?" section: per-category bar showing weight × raw score contribution; shows if weights have been updated ("recalculated after Scout learned from your behaviour")
