@@ -10,7 +10,7 @@
 - [ ] lib/uk-apis.ts — CQC GP surgery ratings (requires free registration)
 - [ ] lib/uk-apis.ts — BODS bus stops/routes (requires free API key)
 - [x] lib/prompts.ts — system prompt + report prompt builder [ACCOUNT-1]
-- [ ] /api/analyse route — data assembly + Claude streaming
+- [ ] /api/analyse route — data assembly + Claude streaming [ACCOUNT-2]
 - [x] lib/interaction-log.ts — event tracker: logSave, logDismiss, logView, logLayerToggle, logCompare, logFeedback [ACCOUNT-1]
 - [ ] lib/agent.ts — scout agent: expands target areas into candidate postcodes, scores each via /api/analyse, returns ranked matches
 - [x] lib/preferences.ts — applyInference, getWeightedScore, explainScore, diffWeights, scoreVerdict [ACCOUNT-1]
